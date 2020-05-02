@@ -10,7 +10,7 @@ const { check, validationResult } = require('express-validator');
 //@desc  Get current user profile
 //access Private
 const serverError = (err) => {
-  console.err(err.message);
+  console.error(err.message);
   res.send(500).send('Server Error');
 };
 
@@ -76,5 +76,49 @@ router.post(
     }
   }
 );
+
+//@route GET api/profile
+//@desc  Get all profiles
+//@access Public
+
+router.get('/', async (req, res) => {
+  try {
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+
+    res.json(profiles);
+  } catch (error) {
+    serverError(error);
+  }
+});
+//@route GET api/profile/user/user_id
+//@desc  Get user profile
+//@access Public
+router.get('/user/:user_id', async (req, res) => {
+  try {
+    const id = req.params.user_id;
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ msg: 'There is no profile with this user' });
+    }
+
+    const profile = await Profile.findOne({ user: id }).populate('user', ['name', 'avatar']);
+    if (!profile) {
+      return res.status(400).json({ msg: 'There is no profile with this user' });
+    }
+    res.json(profile);
+  } catch (error) {
+    serverError(error);
+  }
+});
+//@route DELETE api/profile/
+//@desc  Get user profile
+//@access Public
+router.delete('/', auth, async (req, res) => {
+  //Remove profile
+  console.log(req.user.id);
+  await Profile.findOneAndRemove({ user: req.user.id });
+  //Remove user
+  await User.findOneAndRemove({ id: req.user.id });
+  res.json({ msg: 'User deleted' });
+});
 
 module.exports = router;
