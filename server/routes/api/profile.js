@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
+const request = require('request');
+const config = require('config');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
@@ -114,11 +116,200 @@ router.get('/user/:user_id', async (req, res) => {
 //@access Public
 router.delete('/', auth, async (req, res) => {
   //Remove profile
-  console.log(req.user.id);
+
   await Profile.findOneAndRemove({ user: req.user.id });
   //Remove user
-  await User.findOneAndRemove({ id: req.user.id });
+  await User.findOneAndRemove({ _id: req.user.id });
   res.json({ msg: 'User deleted' });
 });
+//@route POST api/profile
+//@ desc add education
+//access Private
+router.post(
+  '/experience',
+  [
+    auth,
+    [
+      check('title', 'Title is required').not().isEmpty(),
+      check('company', 'Company is required').not().isEmpty(),
+      check('from', 'From date is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const newExp = {};
+    Object.entries(req.body).map(([field, value]) => (newExp[field] = value));
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+      console.log(console.log(profile));
+      profile.education.unshift(newExp);
+      await profile.save();
+      return res.json(profile);
+    } catch (error) {
+      serverError(error);
+    }
+  }
+);
+//@route POST api/profile
+//@ desc edit experience
+//access Private
+router.put(
+  '/experience',
+  [
+    auth,
+    [
+      check('title', 'Title is required').not().isEmpty(),
+      check('company', 'Company is required').not().isEmpty(),
+      check('from', 'From date is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const newExp = {};
+    Object.entries(req.body).map(([field, value]) =>
+      field !== '_id' ? (newExp[field] = value) : ''
+    );
+    try {
+      const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+      const updated = profile.experience.map((e) => (e._id == req.body._id ? req.body : e));
+      profile.experience = updated;
+      await profile.save();
+      return res.json(profile);
+    } catch (error) {
+      serverError(error);
+    }
+  }
+);
 
+router.delete('/experience', auth, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+    const updated = profile.experience.filter((e) => e._id != req.body._id);
+    profile.education = updated;
+    await profile.save();
+    return res.status(200).json(profile);
+  } catch (error) {
+    serverError(error);
+  }
+});
+router.post(
+  '/education',
+  [
+    auth,
+    [
+      check('school', 'Title is required').not().isEmpty(),
+      check('degree', 'Degree is required').not().isEmpty(),
+      check('fieldofstudy', 'Field of study  is required').not().isEmpty(),
+      check('from', 'From date is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const newExp = {};
+    Object.entries(req.body).map(([field, value]) => (newExp[field] = value));
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+      console.log(console.log(profile));
+      profile.education.unshift(newExp);
+      await profile.save();
+      return res.json(profile);
+    } catch (error) {
+      serverError(error);
+    }
+  }
+);
+//@route POST api/profile
+//@ desc edit education
+//access Private
+router.put(
+  '/education',
+  [
+    auth,
+    [
+      check('school', 'Title is required').not().isEmpty(),
+      check('degree', 'Degree is required').not().isEmpty(),
+      check('fieldofstudy', 'Field of study  is required').not().isEmpty(),
+      check('from', 'From date is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const newExp = {};
+    Object.entries(req.body).map(([field, value]) =>
+      field !== '_id' ? (newExp[field] = value) : ''
+    );
+    try {
+      const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+      const updated = profile.education.map((e) => (e._id == req.body._id ? req.body : e));
+      profile.education = updated;
+      await profile.save();
+      return res.json(profile);
+    } catch (error) {
+      serverError(error);
+    }
+  }
+);
+
+router.delete('/education', auth, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+    const updated = profile.education.filter((e) => e._id != req.body._id);
+    profile.education = updated;
+    await profile.save();
+    return res.status(200).json(profile);
+  } catch (error) {
+    serverError(error);
+  }
+});
+
+//@route Get api/profile/github
+//@ desc get repos
+//access Public
+router.post('/github', (req, res) => {
+  try {
+    const options = {
+      uri: `https://api.github.com/users/${
+        req.body.username
+      }/repos?per_page=5&sort=created:asc&client_id=${config.get(
+        'githubID'
+      )}&client_secret=${config.get('githubSecret')}`,
+      method: 'GET',
+      headers: { 'user-agent': 'node.js' },
+    };
+    request(options, (err, response, body) => {
+      if (err) {
+        console.error(error);
+      }
+
+      if (JSON.parse(body).length === 0) {
+        return res.status(404).json({ msg: 'No github profile found' });
+      }
+      res.json(JSON.parse(body));
+    });
+  } catch (error) {
+    serverError(error);
+  }
+});
 module.exports = router;
