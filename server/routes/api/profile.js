@@ -302,7 +302,7 @@ router.post('/github', (req, res) => {
     };
     request(options, (err, response, body) => {
       if (err) {
-        console.error(error);
+        console.error(err);
       }
 
       if (JSON.parse(body).length === 0) {
