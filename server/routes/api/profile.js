@@ -11,9 +11,9 @@ const { check, validationResult } = require('express-validator');
 //@route GET api/profile/me
 //@desc  Get current user profile
 //access Private
-const serverError = (err) => {
+const serverError = (err, res) => {
   console.error(err.message);
-  res.send(500).send('Server Error');
+  res.status(500).send('Server Error');
 };
 
 router.get('/me', auth, async (req, res) => {
@@ -28,7 +28,7 @@ router.get('/me', auth, async (req, res) => {
     }
     res.json(profile);
   } catch (error) {
-    serverError(error);
+    serverError(error, res);
   }
 });
 //@route POST api/profile
@@ -74,7 +74,7 @@ router.post(
       await profile.save();
       return res.json(profile);
     } catch (error) {
-      serverError(error);
+      serverError(error, res);
     }
   }
 );
@@ -89,7 +89,7 @@ router.get('/', async (req, res) => {
 
     res.json(profiles);
   } catch (error) {
-    serverError(error);
+    serverError(error, res);
   }
 });
 //@route GET api/profile/user/user_id
@@ -108,7 +108,7 @@ router.get('/user/:user_id', async (req, res) => {
     }
     res.json(profile);
   } catch (error) {
-    serverError(error);
+    serverError(error, res);
   }
 });
 //@route DELETE api/profile/
@@ -144,12 +144,12 @@ router.post(
     Object.entries(req.body).map(([field, value]) => (newExp[field] = value));
     try {
       const profile = await Profile.findOne({ user: req.user.id });
-      console.log(console.log(profile));
+
       profile.education.unshift(newExp);
       await profile.save();
       return res.json(profile);
     } catch (error) {
-      serverError(error);
+      serverError(error, res);
     }
   }
 );
@@ -182,7 +182,7 @@ router.put(
       await profile.save();
       return res.json(profile);
     } catch (error) {
-      serverError(error);
+      serverError(error, res);
     }
   }
 );
@@ -200,7 +200,7 @@ router.delete('/experience', auth, async (req, res) => {
     await profile.save();
     return res.status(200).json(profile);
   } catch (error) {
-    serverError(error);
+    serverError(error, res);
   }
 });
 router.post(
@@ -228,7 +228,7 @@ router.post(
       await profile.save();
       return res.json(profile);
     } catch (error) {
-      serverError(error);
+      serverError(error, res);
     }
   }
 );
@@ -262,7 +262,7 @@ router.put(
       await profile.save();
       return res.json(profile);
     } catch (error) {
-      serverError(error);
+      serverError(error, res);
     }
   }
 );
@@ -280,7 +280,7 @@ router.delete('/education', auth, async (req, res) => {
     await profile.save();
     return res.status(200).json(profile);
   } catch (error) {
-    serverError(error);
+    serverError(error, res);
   }
 });
 
@@ -311,7 +311,7 @@ router.post('/github', (req, res) => {
       res.json(JSON.parse(body));
     });
   } catch (error) {
-    serverError(error);
+    serverError(error, res);
   }
 });
 module.exports = router;

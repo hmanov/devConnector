@@ -6,13 +6,13 @@ const User = require('../../models/User');
 const Profile = require('../../models/Profile');
 const Post = require('../../models/Post');
 
-const serverError = (err) => {
+const serverError = (err, res) => {
   console.error(err.message);
-  res.send(500).send('Server Error');
+  res.status(500).send('Server Error');
 };
 //@route post api/posts
 //@desc  Create Post
-//access private
+//@access private
 
 router.post(
   '/',
@@ -39,5 +39,74 @@ router.post(
     }
   }
 );
+//@route get api/posts/post
+//@desc  get post
+//access private
 
+router.post('/post', auth, async (req, res) => {
+  try {
+    const id = req.body._id;
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ msg: 'There is no profile with this user' });
+    }
+    const posts = await Post.findById(req.body._id);
+    if (!posts) {
+      res.status(404).json({ msg: 'Post Not Found' });
+    }
+    res.json(posts);
+  } catch (error) {
+    serverError(error, res);
+  }
+});
+//@route get api/posts/post
+//@desc  get post
+//access private
+
+router.delete('/post', auth, async (req, res) => {
+  try {
+    if (req.body.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
+    await Post.findByIdAndRemove(req.body._id);
+    res.json({ msg: 'Post deleted' });
+  } catch (error) {
+    serverError(error, res);
+  }
+});
+//@ route PUT api/posts/likes
+//@ desc Like a post
+//@ access Private
+
+router.put('/like', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.body._id);
+
+    const isAlreadyLiked =
+      post.likes.filter((like) => like.user.toString() === req.user.id).length > 0;
+    if (isAlreadyLiked) {
+      return res.json({ msg: 'Post already liked' });
+    }
+    post.likes.unshift({ user: req.user.id });
+    await post.save();
+    res.json(post.likes);
+  } catch (error) {
+    serverError(error, res);
+  }
+});
+router.put('/unlike', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.body._id);
+
+    const isAlreadyLiked =
+      post.likes.filter((like) => like.user.toString() === req.user.id).length > 0;
+    if (!isAlreadyLiked) {
+      return res.json({ msg: 'Post not liked' });
+    }
+    post.likes = post.likes.filter((like) => like.user.toString() !== req.user.id);
+    await post.save();
+    res.status(201).json({ msg: 'Post Unliked' });
+  } catch (error) {
+    serverError(error, res);
+  }
+});
 module.exports = router;
