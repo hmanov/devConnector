@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-const url = 'http://localhost:5000';
-const Register = (props) => {
+import { Link, Redirect } from 'react-router-dom';
+import { setAlert } from '../../reducers/alertActions';
+import { register } from '../../reducers/authActions';
+
+const Register = ({ setAlert, register, isAuth }) => {
   const [data, setData] = useState({
     name: '',
     email: '',
@@ -16,23 +18,14 @@ const Register = (props) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password !== rePassword) {
-      return console.log(`password does not match`);
+      return setAlert('password does not match', 'danger', 3000);
     }
-    const newUser = {
-      name,
-      email,
-      password,
-    };
-
-    try {
-      const config = { headers: { 'Content-Type': 'application/json' } };
-      const res = await axios.post(url + '/api/users', newUser, config);
-      console.log(res.data);
-    } catch (error) {
-      console.error(error.response.data);
-    }
+    register({ name, email, password });
   };
-
+  console.log(isAuth);
+  if (isAuth) {
+    return <Redirect to='/dashboard' />;
+  }
   return (
     <>
       {' '}
@@ -48,7 +41,7 @@ const Register = (props) => {
             name='name'
             value={name}
             onChange={onChange}
-            required
+            // required
           />
         </div>
         <div className='form-group'>
@@ -68,7 +61,7 @@ const Register = (props) => {
             type='password'
             placeholder='Password'
             name='password'
-            minLength='6'
+            // minLength='6'
             value={password}
             onChange={onChange}
           />
@@ -78,7 +71,7 @@ const Register = (props) => {
             type='password'
             placeholder='Confirm Password'
             name='rePassword'
-            minLength='6'
+            // minLength='6'
             value={rePassword}
             onChange={onChange}
           />
@@ -92,6 +85,12 @@ const Register = (props) => {
   );
 };
 
-Register.propTypes = {};
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => ({
+  isAuth: state.auth.isAuthenticated,
+});
 
-export default Register;
+export default connect(mapStateToProps, { setAlert, register })(Register);

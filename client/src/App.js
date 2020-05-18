@@ -1,27 +1,41 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Landing from './components/layout/Landing';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
+import Dashboard from './components/dashboard/Dashboard';
+import PrivateRoute from './components/routing/PrivateRoute';
 //Redux
 import { Provider } from 'react-redux';
 import store from './store';
+import Alert from './components/layout/Alert';
+import { getUser } from './reducers/authActions';
 
-const App = () => (
-  <Provider store={store}>
-    <Router>
-      <Navbar />
-      <Route exact path='/' component={Landing} />
-      <section className='container'>
-        <Switch>
-          <Route exact path='/register' component={Register} />
-          <Route exact path='/login' component={Login} />
-        </Switch>
-      </section>
-    </Router>
-  </Provider>
-);
+const App = () => {
+  useEffect(() => {
+    if (localStorage.token) {
+      store.dispatch(getUser());
+    }
+  }, []);
+
+  return (
+    <Provider store={store}>
+      <Router>
+        <Navbar />
+        <Route exact path='/' component={Landing} />
+        <section className='container'>
+          <Alert />
+          <Switch>
+            <Route exact path='/register' component={Register} />
+            <Route exact path='/login' component={Login} />
+            <PrivateRoute exact path='/dashboard' component={Dashboard} />
+          </Switch>
+        </section>
+      </Router>
+    </Provider>
+  );
+};
 
 export default App;

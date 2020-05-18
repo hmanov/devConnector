@@ -50,7 +50,6 @@ router.post(
       if (!isMatch) {
         res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
       }
-      console.log('here');
       const payload = {
         user: {
           id: user.id,

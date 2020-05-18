@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-const Login = (props) => {
+import { connect } from 'react-redux';
+import { login } from '../../reducers/authActions';
+import { Link, Redirect } from 'react-router-dom';
+
+const Login = ({ login, auth: { isAuthenticated, isLoading } }) => {
   const [data, setData] = useState({
     email: '',
     password: '',
   });
   const { email, password } = data;
   const onChange = (e) => setData({ ...data, [e.target.name]: e.target.value });
-  const onSubmit = async (e) => {};
+  const onSubmit = (e) => {
+    e.preventDefault();
+    login({ email, password });
+  };
+
+  if (isAuthenticated && !isLoading) {
+    return <Redirect to='/dashboard' />;
+  }
   return (
     <>
       {' '}
@@ -21,8 +30,9 @@ const Login = (props) => {
         <div className='form-group'>
           <input
             type='email'
-            placeholder='Email Address'
             name='email'
+            placeholder='email'
+            autoComplete='current-email'
             required
             value={email}
             onChange={onChange}
@@ -31,8 +41,9 @@ const Login = (props) => {
         <div className='form-group'>
           <input
             type='password'
-            placeholder='Password'
             name='password'
+            placeholder='password'
+            autoComplete='current-password'
             value={password}
             onChange={onChange}
           />
@@ -46,6 +57,12 @@ const Login = (props) => {
   );
 };
 
-Login.propTypes = {};
+Login.propTypes = {
+  login: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+};
 
-export default Login;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+export default connect(mapStateToProps, { login })(Login);
