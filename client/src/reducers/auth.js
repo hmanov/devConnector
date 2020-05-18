@@ -35,7 +35,6 @@ export default (state = initialState, action) => {
     case LOGOUT:
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      console.log(state.isLoading);
       return { ...state, token: false, isAuthenticated: false, isLoading: false, user: null };
     default:
       return state;

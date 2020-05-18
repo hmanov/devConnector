@@ -17,7 +17,7 @@ export default (state = initialState, action) => {
       return { ...state, error: payload, isLoading: false };
     case LOGOUT:
       localStorage.removeItem('profile');
-      return { ...initialState };
+      return { ...state, profile: null };
     default:
       return state;
   }

@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Spinner from '../layout/Spinner';
 import { getCurrentProfile } from '../../reducers/profileActions';
 
-const Dashboard = ({ getCurrentProfile, auth: { user }, profile: { isLoading } }) => {
+const Dashboard = ({ getCurrentProfile, auth: { user }, profile: { profile, isLoading } }) => {
   useEffect(() => {
     if (user) {
       getCurrentProfile(user._id);
@@ -18,6 +19,16 @@ const Dashboard = ({ getCurrentProfile, auth: { user }, profile: { isLoading } }
       <p className='lead'>
         <i className='fas fa-user'>Welcome {user && user.name}</i>
       </p>
+      {profile !== null ? (
+        <></>
+      ) : (
+        <>
+          <p>You have not setup a profile, please add some info</p>{' '}
+          <Link to='/create-profile' className='btn btn-primary my-1'>
+            Create Profile
+          </Link>
+        </>
+      )}
     </>
   );
 };
