@@ -23,7 +23,7 @@ const Dashboard = ({ getCurrentProfile, auth: { user }, profile: { profile, isLo
         <></>
       ) : (
         <>
-          <p>You have not setup a profile, please add some info</p>{' '}
+          <p>You have not set up a profile, please add some info</p>{' '}
           <Link to='/create-profile' className='btn btn-primary my-1'>
             Create Profile
           </Link>
@@ -35,8 +35,8 @@ const Dashboard = ({ getCurrentProfile, auth: { user }, profile: { profile, isLo
 
 Dashboard.propTypes = {
   getCurrentProfile: PropTypes.func.isRequired,
-  id: PropTypes.string,
   profile: PropTypes.object,
+  auth: PropTypes.object,
 };
 const mapStateToProps = (state) => ({
   auth: state.auth,
