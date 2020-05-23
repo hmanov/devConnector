@@ -22,7 +22,7 @@ const Register = ({ setAlert, register, isAuth }) => {
     }
     register({ name, email, password });
   };
-  console.log(isAuth);
+
   if (isAuth) {
     return <Redirect to='/dashboard' />;
   }

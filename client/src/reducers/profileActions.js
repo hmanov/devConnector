@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { setAlert } from './alertActions';
 import setAuthToken from '../utils/setAuthToken';
-import { GET_PROFILE, PROFILE_ERROR, UPDATE_PROFILE } from './types';
+import { GET_PROFILE, PROFILE_ERROR, UPDATE_PROFILE, DELETE_ACCOUNT, CLEAR_PROFILE } from './types';
 
 const url = 'http://localhost:5000';
 export const getCurrentProfile = (id) => async (dispatch) => {
@@ -117,4 +117,13 @@ export const deleteEducation = (id) => async (dispatch) => {
     dispatch({ type: UPDATE_PROFILE, payload: res.data });
     dispatch(setAlert('Education Deleted', 'success'));
   } catch (error) {}
+};
+
+export const deleteAccount = () => async (dispatch) => {
+  if (window.confirm('Are you sure? This can NOT be undone!!!')) {
+    const res = await axios.delete(url + '/api/profile');
+    dispatch({ type: CLEAR_PROFILE });
+    dispatch({ type: DELETE_ACCOUNT });
+    dispatch(setAlert(res.data.msg, 'success'));
+  }
 };
