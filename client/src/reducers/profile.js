@@ -1,4 +1,12 @@
-import { GET_PROFILE, PROFILE_ERROR, LOGOUT, UPDATE_PROFILE, DELETE_ACCOUNT } from './types';
+import {
+  GET_PROFILE,
+  PROFILE_ERROR,
+  LOGOUT,
+  UPDATE_PROFILE,
+  DELETE_ACCOUNT,
+  GET_PROFILES,
+  GET_REPOS,
+} from './types';
 
 const initialState = {
   profile: JSON.parse(localStorage.getItem('profile')),
@@ -20,7 +28,10 @@ export default (state = initialState, action) => {
     case DELETE_ACCOUNT:
       localStorage.removeItem('profile');
       return { ...state, profile: null };
-
+    case GET_PROFILES:
+      return { ...state, profiles: payload, isLoading: false };
+    case GET_REPOS:
+      return { ...state, repos: payload, isLoading: false };
     default:
       return state;
   }
