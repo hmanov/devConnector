@@ -123,37 +123,7 @@ router.delete('/', auth, async (req, res) => {
   await User.findOneAndRemove({ _id: req.user.id });
   res.json({ msg: 'User deleted' });
 });
-//@route POST api/profile
-//@ desc add education
-//access Private
-router.post(
-  '/experience',
-  [
-    auth,
-    [
-      check('title', 'Title is required').not().isEmpty(),
-      check('company', 'Company is required').not().isEmpty(),
-      check('from', 'From date is required').not().isEmpty(),
-    ],
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const newExp = {};
-    Object.entries(req.body).map(([field, value]) => (newExp[field] = value));
-    try {
-      const profile = await Profile.findOne({ user: req.user.id });
 
-      profile.education.unshift(newExp);
-      await profile.save();
-      return res.json(profile);
-    } catch (error) {
-      serverError(error, res);
-    }
-  }
-);
 //@route POST api/profile
 //@ desc edit experience
 //access Private
@@ -178,7 +148,7 @@ router.put(
     );
     try {
       const profile = await Profile.findOneAndUpdate({ user: req.user.id });
-      const updated = profile.experience.map((e) => (e._id == req.body._id ? req.body : e));
+      const updated = [...profile.experience, req.body];
       profile.experience = updated;
       await profile.save();
       return res.json(profile);
@@ -196,9 +166,11 @@ router.delete('/experience', auth, async (req, res) => {
 
   try {
     const profile = await Profile.findOneAndUpdate({ user: req.user.id });
-    const updated = profile.experience.filter((e) => e._id != req.body._id);
-    profile.education = updated;
+    const updated = profile.experience.filter((e) => e._id != req.body.id);
+
+    profile.experience = updated;
     await profile.save();
+
     return res.status(200).json(profile);
   } catch (error) {
     serverError(error, res);
@@ -224,7 +196,6 @@ router.post(
     Object.entries(req.body).map(([field, value]) => (newExp[field] = value));
     try {
       const profile = await Profile.findOne({ user: req.user.id });
-      console.log(console.log(profile));
       profile.education.unshift(newExp);
       await profile.save();
       return res.json(profile);
@@ -276,7 +247,7 @@ router.delete('/education', auth, async (req, res) => {
 
   try {
     const profile = await Profile.findOneAndUpdate({ user: req.user.id });
-    const updated = profile.education.filter((e) => e._id != req.body._id);
+    const updated = profile.education.filter((e) => e._id != req.body.id);
     profile.education = updated;
     await profile.save();
     return res.status(200).json(profile);

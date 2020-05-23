@@ -69,6 +69,19 @@ export const addExperience = (formData, history) => async (dispatch) => {
     });
   }
 };
+
+//Delete experience
+
+export const deleteExperience = (id) => async (dispatch) => {
+  try {
+    const res = await axios.delete(url + '/api/profile/experience', {
+      headers: { 'Content-type': 'application/json' },
+      data: { id },
+    });
+    dispatch({ type: UPDATE_PROFILE, payload: res.data });
+  } catch (error) {}
+};
+
 //Add Education
 export const addEducation = (formData, history) => async (dispatch) => {
   try {
@@ -77,7 +90,7 @@ export const addEducation = (formData, history) => async (dispatch) => {
         'Content-type': 'application/json',
       },
     };
-    const res = await axios.put(url + '/api/profile/education', formData, config);
+    const res = await axios.post(url + '/api/profile/education', formData, config);
 
     dispatch({ type: UPDATE_PROFILE, payload: res.data });
     dispatch(setAlert('Education Added', 'success'));
@@ -93,4 +106,15 @@ export const addEducation = (formData, history) => async (dispatch) => {
       payload: { msg: error.response.statusText, status: error.response.status },
     });
   }
+};
+
+export const deleteEducation = (id) => async (dispatch) => {
+  try {
+    const res = await axios.delete(url + '/api/profile/education', {
+      headers: { 'Content-type': 'application/json' },
+      data: { id },
+    });
+    dispatch({ type: UPDATE_PROFILE, payload: res.data });
+    dispatch(setAlert('Education Deleted', 'success'));
+  } catch (error) {}
 };

@@ -2,62 +2,60 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { addExperience } from '../../reducers/profileActions';
+import { addEducation } from '../../reducers/profileActions';
 
-const AddExperience = ({ addExperience, history }) => {
+const AddEducation = ({ addEducation, history }) => {
   const [data, setData] = useState({
-    company: '',
-    title: '',
-    location: '',
+    school: '',
+    degree: '',
+    fieldofstudy: '',
     from: '',
     to: '',
     current: false,
     description: '',
   });
-  const { company, title, location, from, to, current, description } = data;
+  const { school, degree, fieldofstudy, from, to, current, description } = data;
 
   const onChange = (e) => setData({ ...data, [e.target.name]: e.target.value });
   const onSubmit = (e) => {
-    console.log(history);
     e.preventDefault();
-    addExperience(data, history);
+    addEducation(data, history);
   };
   return (
     <>
-      <h1 className='large text-primary'>Add An Experience</h1>
+      <h1 className='large text-primary'>Add Your Education</h1>
       <p className='lead'>
-        <i className='fas fa-code-branch'></i> Add any developer/programming positions that you have
-        had in the past
+        <i className='fas fa-code-branch'></i> Add any school or bootcamp that you have attended
       </p>
       <small>* = required field</small>
       <form className='form' onSubmit={onSubmit}>
         <div className='form-group'>
           <input
             type='text'
-            placeholder='* Job Title'
-            value={title}
+            placeholder='* School or Bootcamp'
+            value={school}
             onChange={onChange}
-            name='title'
+            name='school'
             required
           />
         </div>
         <div className='form-group'>
           <input
             type='text'
-            placeholder='* Company'
-            value={company}
+            placeholder='* Degree or Certificate'
+            value={degree}
             onChange={onChange}
-            name='company'
+            name='degree'
             required
           />
         </div>
         <div className='form-group'>
           <input
             type='text'
-            placeholder='Location'
-            value={location}
+            placeholder='Field of Study '
+            value={fieldofstudy}
             onChange={onChange}
-            name='location'
+            name='fieldofstudy'
           />
         </div>
         <div className='form-group'>
@@ -88,7 +86,7 @@ const AddExperience = ({ addExperience, history }) => {
             onChange={onChange}
             cols='30'
             rows='5'
-            placeholder='Job Description'
+            placeholder='Program Description'
           ></textarea>
         </div>
         <input type='submit' className='btn btn-primary my-1' />
@@ -100,8 +98,8 @@ const AddExperience = ({ addExperience, history }) => {
   );
 };
 
-AddExperience.propTypes = {
-  addExperience: PropTypes.func.isRequired,
+AddEducation.propTypes = {
+  addEducation: PropTypes.func.isRequired,
 };
 
-export default connect(null, { addExperience })(AddExperience);
+export default connect(null, { addEducation })(AddEducation);

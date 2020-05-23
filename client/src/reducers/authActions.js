@@ -1,14 +1,6 @@
 import axios from 'axios';
 import { setAlert } from './alertActions';
-import {
-  REGISTER_FAIL,
-  REGISTER_SUCCESS,
-  LOGIN_FAIL,
-  LOGIN_SUCCESS,
-  SET_USER,
-  AUTH_ERROR,
-  LOGOUT,
-} from './types';
+import { REGISTER_SUCCESS, LOGIN_FAIL, LOGIN_SUCCESS, SET_USER, AUTH_ERROR, LOGOUT } from './types';
 import setAuthToken from '../utils/setAuthToken';
 const url = 'http://localhost:5000';
 
