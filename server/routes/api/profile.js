@@ -58,7 +58,8 @@ router.post(
     );
     Object.entries(req.body).forEach(([key, value]) => (profileFields[key] = value));
 
-    profileFields.skills = req.body.skills.split(/[,\W]+/gm);
+    profileFields.skills =
+      typeof req.body.skills === 'string' ? req.body.skills.split(/[,\W]+/g) : req.body.skills;
 
     try {
       let profile = await Profile.findOneAndUpdate(

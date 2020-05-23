@@ -10,3 +10,4 @@ export const LOGOUT = 'LOGOUT';
 //Profile
 export const GET_PROFILE = 'GET_PROFILE';
 export const PROFILE_ERROR = 'PROFILE_ERROR';
+export const UPDATE_PROFILE = 'UPDATE_PROFILE';

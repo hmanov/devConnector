@@ -40,7 +40,7 @@ const Navbar = ({ auth: { isLoading, isAuthenticated }, logout }) => {
           <i className='fas fa-code'></i> DevConnector
         </Link>
       </h1>
-      {!isLoading && isAuthenticated ? authLinks : guestLinks}
+      {isAuthenticated ? authLinks : guestLinks}
     </nav>
   );
 };

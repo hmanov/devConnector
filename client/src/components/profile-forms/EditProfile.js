@@ -1,26 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { createProfile } from '../../reducers/profileActions';
+import { getCurrentProfile } from '../../reducers/profileActions';
 
-const initialState = {
-  company: '',
-  website: '',
-  location: '',
-  status: '',
-  skills: '',
-  githubusername: '',
-  bio: '',
-  twitter: '',
-  facebook: '',
-  linkedin: '',
-  youtube: '',
-  instagram: '',
-};
-
-const CreateProfile = ({ createProfile, history }) => {
-  const [data, setData] = useState(initialState);
+const EditProfile = ({
+  profile: { profile, isLoading },
+  createProfile,
+  getCurrentProfile,
+  history,
+}) => {
+  useEffect(() => {
+    getCurrentProfile();
+  }, [getCurrentProfile]);
+  const [data, setData] = useState(profile);
 
   const {
     company,
@@ -41,7 +35,7 @@ const CreateProfile = ({ createProfile, history }) => {
   const onChange = (e) => setData({ ...data, [e.target.name]: e.target.value });
   const onSubmit = (e) => {
     e.preventDefault();
-    createProfile(data, history);
+    createProfile(data, history, true);
   };
   return (
     <>
@@ -52,8 +46,8 @@ const CreateProfile = ({ createProfile, history }) => {
       </p>
       <small>* = required field</small>
       <form className='form' onSubmit={onSubmit}>
-        <div className='form-group' value={status} onChange={onChange}>
-          <select name='status'>
+        <div className='form-group'>
+          <select name='status' value={status} onChange={onChange}>
             <option value='0'>* Select Professional Status</option>
             <option value='Developer'>Developer</option>
             <option value='Junior Developer'>Junior Developer</option>
@@ -148,7 +142,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 type='text'
                 placeholder='Twitter URL'
                 name='twitter'
-                value={twitter}
+                value={twitter || ''}
                 onChange={onChange}
               />
             </div>
@@ -159,7 +153,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 type='text'
                 placeholder='Facebook URL'
                 name='facebook'
-                value={facebook}
+                value={facebook || ''}
                 onChange={onChange}
               />
             </div>
@@ -170,7 +164,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 type='text'
                 placeholder='YouTube URL'
                 name='youtube'
-                value={youtube}
+                value={youtube || ''}
                 onChange={onChange}
               />
             </div>
@@ -181,7 +175,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 type='text'
                 placeholder='Linkedin URL'
                 name='linkedin'
-                value={linkedin}
+                value={linkedin || ''}
                 onChange={onChange}
               />
             </div>
@@ -192,7 +186,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 type='text'
                 placeholder='Instagram URL'
                 name='instagram'
-                value={instagram}
+                value={instagram || ''}
                 onChange={onChange}
               />
             </div>
@@ -207,8 +201,14 @@ const CreateProfile = ({ createProfile, history }) => {
   );
 };
 
-CreateProfile.propTypes = {
+EditProfile.propTypes = {
   createProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired,
 };
-
-export default connect(null, { createProfile })(withRouter(CreateProfile));
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+});
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
+  withRouter(EditProfile)
+);
