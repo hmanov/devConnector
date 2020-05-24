@@ -19,6 +19,7 @@ export const getCurrentProfile = (id) => async (dispatch) => {
 
     dispatch({ type: GET_PROFILE, payload: res.data });
   } catch (error) {
+    dispatch({ type: CLEAR_PROFILE });
     dispatch({
       type: PROFILE_ERROR,
       payload: { msg: error.response.statusText, status: error.response.status },
@@ -41,9 +42,9 @@ export const getProfiles = () => async (dispatch) => {
     });
   }
 };
-export const getProfilesById = (userId) => async (dispatch) => {
+export const getProfileById = (userId) => async (dispatch) => {
   setAuthToken();
-
+  dispatch({ type: CLEAR_PROFILE });
   try {
     const res = await axios.get(url + `/api/profile/${userId}`);
 
@@ -59,11 +60,18 @@ export const getProfilesById = (userId) => async (dispatch) => {
 // get github repos
 export const getGithubRepos = (username) => async (dispatch) => {
   try {
-    const res = await axios.get(url + 'profile/github', {
-      headers: { 'Content-Type': 'application/json', data: username },
-    });
-    dispatch({ type: GET_REPOS, res });
-  } catch (error) {}
+    const res = await axios.post(
+      url + '/api/profile/github',
+      { username },
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+
+    dispatch({ type: GET_REPOS, payload: res.data });
+  } catch (error) {
+    console.log(error.response);
+  }
 };
 export const createProfile = (formData, history, edit = false) => async (dispatch) => {
   try {

@@ -12,7 +12,6 @@ const { check, validationResult } = require('express-validator');
 //@desc  Get current user profile
 //access Private
 const serverError = (err, res) => {
-  console.error(err.message);
   res.status(500).send('Server Error');
 };
 
@@ -28,6 +27,7 @@ router.get('/me', auth, async (req, res) => {
     }
     res.json(profile);
   } catch (error) {
+    console.log('in error');
     serverError(error, res);
   }
 });
@@ -96,7 +96,7 @@ router.get('/', async (req, res) => {
 //@route GET api/profile/user/user_id
 //@desc  Get user profile
 //@access Public
-router.get('/user/:user_id', async (req, res) => {
+router.get('/:user_id', async (req, res) => {
   try {
     const id = req.params.user_id;
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -267,8 +267,8 @@ router.post('/github', (req, res) => {
       headers: {
         'user-agent': 'node.js',
         auth: {
-          user: 'username',
-          password: 'token',
+          username: config.get('hmanov'),
+          password: config.get('githubSecret'),
         },
       },
     };
@@ -280,6 +280,7 @@ router.post('/github', (req, res) => {
       if (JSON.parse(body).length === 0) {
         return res.status(404).json({ msg: 'No github profile found' });
       }
+
       res.json(JSON.parse(body));
     });
   } catch (error) {

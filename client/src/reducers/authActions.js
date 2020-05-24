@@ -62,7 +62,8 @@ export const login = ({ email, password }) => async (dispatch) => {
     console.error(error.response.data);
   }
 };
-export const logout = (e) => (dispatch) => {
+export const logout = (e, history) => (dispatch) => {
   e.preventDefault();
+  history.push('/');
   dispatch({ type: LOGOUT });
 };
