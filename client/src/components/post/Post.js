@@ -5,6 +5,8 @@ import Spinner from '../layout/Spinner';
 import { getPost } from '../../reducers/postAction';
 import PostItem from '../posts/PostItem';
 import { Link } from 'react-router-dom';
+import CommentForm from './CommentForm';
+import CommentItem from './CommentItem';
 
 const Post = ({
   location: {
@@ -25,6 +27,12 @@ const Post = ({
         Back To Posts
       </Link>
       <PostItem post={post} showActions={false} />
+      <CommentForm id={id} />
+      <div className='comments'>
+        {post.comments.map((comment) => (
+          <CommentItem comment={comment} key={comment._id} postId={post._id} />
+        ))}
+      </div>
     </>
   );
 };

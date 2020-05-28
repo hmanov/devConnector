@@ -143,6 +143,7 @@ router.put('/unlike', auth, async (req, res) => {
 router.post(
   '/comment',
   [auth, [check('text', 'Post text is required').not().isEmpty()]],
+
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty) {
@@ -195,12 +196,14 @@ router.put('/comment', auth, async (req, res) => {
 //access private
 
 router.delete('/comment', auth, async (req, res) => {
+  console.log(req.body);
   try {
-    if (req.body.user.toString() !== req.user.id) {
+    if (req.body.comment.user !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
-    const post = await Post.findById(req.body._id);
-    post.comments = post.comments.filter((e) => e._id.toString() !== req.body.commentID);
+    console.log(req.body.comment._id);
+    const post = await Post.findById(req.body.postId);
+    post.comments = post.comments.filter((e) => e._id.toString() !== req.body.comment._id);
     post.save();
     res.json({ msg: 'comment deleted' });
   } catch (error) {

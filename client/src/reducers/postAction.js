@@ -132,12 +132,12 @@ export const getPost = (id) => async (dispatch) => {
 };
 
 //add Comment
-export const addComment = (id, data) => async (dispatch) => {
+export const addComment = (id, text) => async (dispatch) => {
   setAuthToken();
   try {
     const res = await axios.post(
-      '/api/posts/commnet',
-      { _id: id, data },
+      '/api/posts/comment',
+      { _id: id, text },
       {
         headers: {
           'Content-Type': 'application/json',
@@ -157,21 +157,21 @@ export const addComment = (id, data) => async (dispatch) => {
 };
 
 //delete Comment
-export const removeComment = (id) => async (dispatch) => {
+export const removeComment = (comment, postId) => async (dispatch) => {
   setAuthToken();
   try {
     await axios.delete(
-      '/api/posts/commnet',
+      '/api/posts/comment',
 
       {
         headers: {
           'Content-Type': 'application/json',
         },
-        data: { _id: id },
+        data: { comment, postId },
       }
     );
 
-    dispatch({ type: REMOVE_COMMENT, payload: id });
+    dispatch({ type: REMOVE_COMMENT, payload: comment._id });
     dispatch(setAlert('Comment deleted', 'success'));
   } catch (error) {
     dispatch({
