@@ -47,7 +47,16 @@ export const register = ({ name, email, password }) => async (dispatch) => {
 
     dispatch({ type: REGISTER_SUCCESS, payload: res.data });
     dispatch(getUser(res.data.token));
-  } catch (error) {}
+  } catch (error) {
+    const errors = error.response.data.errors;
+
+    if (errors) {
+      errors.forEach((err) => dispatch(setAlert(err.msg, 'danger')));
+    }
+
+    dispatch({ type: LOGIN_FAIL });
+    console.error(error.response.data);
+  }
 };
 
 export const login = ({ email, password }) => async (dispatch) => {
@@ -62,6 +71,7 @@ export const login = ({ email, password }) => async (dispatch) => {
     dispatch(getUser(res.data.token));
   } catch (error) {
     const errors = error.response.data.errors;
+
     if (errors) {
       errors.forEach((err) => dispatch(setAlert(err.msg, 'danger')));
     }
