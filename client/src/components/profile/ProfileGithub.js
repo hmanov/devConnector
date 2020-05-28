@@ -15,7 +15,7 @@ const ProfileGithub = ({ username, getGithubRepos, repos, isLoading }) => {
 
       {isLoading ? (
         <Spinner />
-      ) : typeof repos === 'array' ? (
+      ) : Array.isArray(repos) ? (
         repos.map((repo) => (
           <div key={repo.id} className='repo bg-white p-1 my-1'>
             <div>
