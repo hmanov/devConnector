@@ -4,16 +4,18 @@ import { connect } from 'react-redux';
 import { getGithubRepos } from '../../reducers/profileActions';
 import Spinner from '../layout/Spinner';
 
-const ProfileGithub = ({ username, getGithubRepos, repos }) => {
+const ProfileGithub = ({ username, getGithubRepos, repos, isLoading }) => {
   useEffect(() => {
     getGithubRepos(username);
   }, [username, getGithubRepos]);
+
   return (
     <div className='profile-github'>
       <h2 className='text-primary my1'>Github Repos</h2>
-      {!repos ? (
+
+      {isLoading ? (
         <Spinner />
-      ) : (
+      ) : typeof repos === 'array' ? (
         repos.map((repo) => (
           <div key={repo.id} className='repo bg-white p-1 my-1'>
             <div>
@@ -33,6 +35,8 @@ const ProfileGithub = ({ username, getGithubRepos, repos }) => {
             </div>
           </div>
         ))
+      ) : (
+        <></>
       )}
     </div>
   );
@@ -45,5 +49,6 @@ ProfileGithub.propTypes = {
 };
 const mapStateToProps = (state) => ({
   repos: state.profile.repos,
+  isLoading: state.profile.isLoading,
 });
 export default connect(mapStateToProps, { getGithubRepos })(ProfileGithub);
