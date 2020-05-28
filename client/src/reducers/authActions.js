@@ -1,14 +1,22 @@
 import axios from 'axios';
 import { setAlert } from './alertActions';
-import { REGISTER_SUCCESS, LOGIN_FAIL, LOGIN_SUCCESS, SET_USER, AUTH_ERROR, LOGOUT } from './types';
+import {
+  REGISTER_SUCCESS,
+  LOGIN_FAIL,
+  LOGIN_SUCCESS,
+  SET_USER,
+  AUTH_ERROR,
+  LOGOUT,
+  SET_LOADING,
+} from './types';
 import setAuthToken from '../utils/setAuthToken';
-const url = 'http://localhost:5000';
 
 //Get user
 export const getUser = (token) => async (dispatch) => {
   setAuthToken(token);
+  dispatch({ type: SET_LOADING });
   try {
-    const user = await axios.get(url + '/api/auth');
+    const user = await axios.get('/api/auth');
     dispatch({ type: SET_USER, payload: user.data });
   } catch (error) {
     const errors = error.response.data.errors;
@@ -35,7 +43,7 @@ export const register = ({ name, email, password }) => async (dispatch) => {
   };
 
   try {
-    const res = await axios.post(url + '/api/users', newUser, config);
+    const res = await axios.post('/api/users', newUser, config);
 
     dispatch({ type: REGISTER_SUCCESS, payload: res.data });
     dispatch(getUser(res.data.token));
@@ -48,7 +56,7 @@ export const login = ({ email, password }) => async (dispatch) => {
     password,
   };
   try {
-    const res = await axios.post(url + '/api/auth', loginData, config);
+    const res = await axios.post('/api/auth', loginData, config);
 
     dispatch({ type: LOGIN_SUCCESS, payload: res.data });
     dispatch(getUser(res.data.token));

@@ -9,13 +9,14 @@ import {
   CLEAR_PROFILE,
   GET_PROFILES,
   GET_REPOS,
+  SET_LOADING,
 } from './types';
 
-const url = 'http://localhost:5000';
 export const getCurrentProfile = (id) => async (dispatch) => {
   setAuthToken();
   try {
-    const res = await axios.get(url + '/api/profile/me', { body: { id } });
+    dispatch({ type: SET_LOADING });
+    const res = await axios.get('/api/profile/me', { body: { id } });
 
     dispatch({ type: GET_PROFILE, payload: res.data });
   } catch (error) {
@@ -31,8 +32,9 @@ export const getCurrentProfile = (id) => async (dispatch) => {
 export const getProfiles = () => async (dispatch) => {
   setAuthToken();
   dispatch({ type: CLEAR_PROFILE });
+  dispatch({ type: SET_LOADING });
   try {
-    const res = await axios.get(url + '/api/profile');
+    const res = await axios.get('/api/profile');
 
     dispatch({ type: GET_PROFILES, payload: res.data });
   } catch (error) {
@@ -46,7 +48,7 @@ export const getProfileById = (userId) => async (dispatch) => {
   setAuthToken();
   dispatch({ type: CLEAR_PROFILE });
   try {
-    const res = await axios.get(url + `/api/profile/${userId}`);
+    const res = await axios.get(`/api/profile/${userId}`);
 
     dispatch({ type: GET_PROFILE, payload: res.data });
   } catch (error) {
@@ -61,7 +63,7 @@ export const getProfileById = (userId) => async (dispatch) => {
 export const getGithubRepos = (username) => async (dispatch) => {
   try {
     const res = await axios.post(
-      url + '/api/profile/github',
+      '/api/profile/github',
       { username },
       {
         headers: { 'Content-Type': 'application/json' },
@@ -80,7 +82,7 @@ export const createProfile = (formData, history, edit = false) => async (dispatc
         'Content-type': 'application/json',
       },
     };
-    const res = await axios.post(url + '/api/profile', formData, config);
+    const res = await axios.post('/api/profile', formData, config);
 
     dispatch({ type: GET_PROFILE, payload: res.data });
     dispatch(setAlert(edit ? 'Profile Updated' : 'Profile Created', 'success'));
@@ -107,7 +109,7 @@ export const addExperience = (formData, history) => async (dispatch) => {
         'Content-type': 'application/json',
       },
     };
-    const res = await axios.put(url + '/api/profile/experience', formData, config);
+    const res = await axios.put('/api/profile/experience', formData, config);
 
     dispatch({ type: UPDATE_PROFILE, payload: res.data });
     dispatch(setAlert('Experience Added', 'success'));
@@ -129,7 +131,7 @@ export const addExperience = (formData, history) => async (dispatch) => {
 
 export const deleteExperience = (id) => async (dispatch) => {
   try {
-    const res = await axios.delete(url + '/api/profile/experience', {
+    const res = await axios.delete('/api/profile/experience', {
       headers: { 'Content-type': 'application/json' },
       data: { id },
     });
@@ -145,7 +147,7 @@ export const addEducation = (formData, history) => async (dispatch) => {
         'Content-type': 'application/json',
       },
     };
-    const res = await axios.post(url + '/api/profile/education', formData, config);
+    const res = await axios.post('/api/profile/education', formData, config);
 
     dispatch({ type: UPDATE_PROFILE, payload: res.data });
     dispatch(setAlert('Education Added', 'success'));
@@ -165,7 +167,7 @@ export const addEducation = (formData, history) => async (dispatch) => {
 
 export const deleteEducation = (id) => async (dispatch) => {
   try {
-    const res = await axios.delete(url + '/api/profile/education', {
+    const res = await axios.delete('/api/profile/education', {
       headers: { 'Content-type': 'application/json' },
       data: { id },
     });
@@ -176,7 +178,7 @@ export const deleteEducation = (id) => async (dispatch) => {
 
 export const deleteAccount = () => async (dispatch) => {
   if (window.confirm('Are you sure? This can NOT be undone!!!')) {
-    const res = await axios.delete(url + '/api/profile');
+    const res = await axios.delete('/api/profile');
     dispatch({ type: CLEAR_PROFILE });
     dispatch({ type: DELETE_ACCOUNT });
     dispatch(setAlert(res.data.msg, 'success'));

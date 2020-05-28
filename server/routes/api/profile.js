@@ -11,7 +11,7 @@ const { check, validationResult } = require('express-validator');
 //@route GET api/profile/me
 //@desc  Get current user profile
 //access Private
-const serverError = (err, res) => {
+const serverError = (err, res, dispatch) => {
   res.status(500).send('Server Error');
 };
 
@@ -27,7 +27,6 @@ router.get('/me', auth, async (req, res) => {
     }
     res.json(profile);
   } catch (error) {
-    console.log('in error');
     serverError(error, res);
   }
 });
@@ -267,7 +266,7 @@ router.post('/github', (req, res) => {
       headers: {
         'user-agent': 'node.js',
         auth: {
-          username: config.get('hmanov'),
+          username: 'hmanov',
           password: config.get('githubSecret'),
         },
       },

@@ -7,6 +7,7 @@ import {
   GET_PROFILES,
   GET_REPOS,
   CLEAR_PROFILE,
+  SET_LOADING,
 } from './types';
 
 const initialState = {
@@ -34,7 +35,8 @@ export default (state = initialState, action) => {
       return { ...state, profiles: payload, isLoading: false };
     case GET_REPOS:
       return { ...state, repos: payload, isLoading: false };
-
+    case SET_LOADING:
+      return { ...state, isLoading: true };
     default:
       return state;
   }

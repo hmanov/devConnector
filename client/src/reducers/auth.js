@@ -7,6 +7,7 @@ import {
   AUTH_ERROR,
   LOGOUT,
   DELETE_ACCOUNT,
+  SET_LOADING,
 } from './types';
 
 const initialState = {
@@ -20,6 +21,8 @@ export default (state = initialState, action) => {
   const { type, payload } = action;
 
   switch (type) {
+    case SET_LOADING:
+      return { ...state, isLoading: true };
     case REGISTER_SUCCESS:
       localStorage.setItem('token', payload.token);
       return { ...state, ...payload, isAuthenticated: true, isLoading: false };
@@ -29,7 +32,7 @@ export default (state = initialState, action) => {
       return { ...state, ...payload, isAuthenticated: true, isLoading: false };
     case SET_USER:
       localStorage.setItem('user', JSON.stringify(payload));
-      return { ...state, user: payload };
+      return { ...state, user: payload, isLoading: false };
     case REGISTER_FAIL:
     case LOGIN_FAIL:
     case AUTH_ERROR:

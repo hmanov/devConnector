@@ -39,6 +39,31 @@ router.post(
     }
   }
 );
+router.delete('/', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.body._id);
+
+    if (req.user.id !== post.user.toString()) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
+    await Post.findByIdAndRemove(req.body._id);
+    return res.json({ msg: 'Post removed' });
+  } catch (error) {
+    serverError(error);
+  }
+});
+// @route    GET api/posts
+// @desc     Get all posts
+// @access   Private
+router.get('/', auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ date: -1 });
+    res.json(posts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 //@route get api/posts/post
 //@desc  get post
 //access private
@@ -46,6 +71,7 @@ router.post(
 router.post('/post', auth, async (req, res) => {
   try {
     const id = req.body._id;
+
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({ msg: 'There is no profile with this user' });
     }
@@ -84,7 +110,7 @@ router.put('/like', auth, async (req, res) => {
     const isAlreadyLiked =
       post.likes.filter((like) => like.user.toString() === req.user.id).length > 0;
     if (isAlreadyLiked) {
-      return res.json({ msg: 'Post already liked' });
+      return res.status(400).json({ msg: 'Post already liked' });
     }
     post.likes.unshift({ user: req.user.id });
     await post.save();
@@ -100,7 +126,7 @@ router.put('/unlike', auth, async (req, res) => {
     const isAlreadyLiked =
       post.likes.filter((like) => like.user.toString() === req.user.id).length > 0;
     if (!isAlreadyLiked) {
-      return res.json({ msg: 'Post not liked' });
+      return res.status(400).json({ msg: 'Post not liked' });
     }
     post.likes = post.likes.filter((like) => like.user.toString() !== req.user.id);
     await post.save();
