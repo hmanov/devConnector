@@ -14,7 +14,7 @@ const EditProfile = ({
 }) => {
   useEffect(() => {
     if (!profile) getCurrentProfile();
-  }, [getCurrentProfile]);
+  }, [getCurrentProfile, profile]);
   const [data, setData] = useState(profile);
 
   const {
