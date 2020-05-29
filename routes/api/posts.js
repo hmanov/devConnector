@@ -15,7 +15,8 @@ const serverError = (err, res) => {
 
 router.post(
   '/',
-  [auth, [check('text', 'Post text is required').not().isEmpty()]],
+  auth,
+  [check('text', 'Post text is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty) {
