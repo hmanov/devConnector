@@ -47,7 +47,7 @@ const Profile = ({ match, getProfileById, profile: { isloading, profile }, auth 
                   )}
                 </div>
                 <div className='profile-exp bg-white p-2'>
-                  <h2 className='text-primary'>Experience</h2>
+                  <h2 className='text-primary'>Education</h2>
                   {profile.education.length ? (
                     <>
                       {profile.education.map((education) => (

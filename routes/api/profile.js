@@ -55,6 +55,7 @@ router.post(
     Object.entries(social).map(([key, value]) =>
       value !== undefined ? (profileFields.social[key] = value) : null
     );
+
     Object.entries(req.body).forEach(([key, value]) => (profileFields[key] = value));
 
     profileFields.skills =
@@ -66,11 +67,12 @@ router.post(
         { $set: profileFields },
         { new: true }
       );
+
       if (profile) {
         return res.json(profile);
       }
       //Create
-      profile = new Profile({ user: req.user.id, ...profileFields });
+      profile = new Profile({ ...profileFields, user: req.user.id });
       await profile.save();
       return res.json(profile);
     } catch (error) {
@@ -142,11 +144,12 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
     const newExp = {};
+    console.log(req.body);
     Object.entries(req.body).map(([field, value]) =>
       field !== '_id' ? (newExp[field] = value) : ''
     );
     try {
-      const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+      const profile = await Profile.findOne({ user: req.user.id });
       const updated = [...profile.experience, req.body];
       profile.experience = updated;
       await profile.save();
@@ -164,7 +167,7 @@ router.delete('/experience', auth, async (req, res) => {
   }
 
   try {
-    const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+    const profile = await Profile.findOne({ user: req.user.id });
     const updated = profile.experience.filter((e) => e._id != req.body.id);
 
     profile.experience = updated;
@@ -227,7 +230,7 @@ router.put(
       field !== '_id' ? (newExp[field] = value) : ''
     );
     try {
-      const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+      const profile = await Profile.findOne({ user: req.user.id });
       const updated = profile.education.map((e) => (e._id == req.body._id ? req.body : e));
       profile.education = updated;
       await profile.save();
@@ -245,7 +248,7 @@ router.delete('/education', auth, async (req, res) => {
   }
 
   try {
-    const profile = await Profile.findOneAndUpdate({ user: req.user.id });
+    const profile = await Profile.findOne({ user: req.user.id });
     const updated = profile.education.filter((e) => e._id != req.body.id);
     profile.education = updated;
     await profile.save();

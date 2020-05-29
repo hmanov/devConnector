@@ -18,7 +18,6 @@ const AddExperience = ({ addExperience, history }) => {
 
   const onChange = (e) => setData({ ...data, [e.target.name]: e.target.value });
   const onSubmit = (e) => {
-    console.log(history);
     e.preventDefault();
     addExperience(data, history);
   };
